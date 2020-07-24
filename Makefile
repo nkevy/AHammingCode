@@ -1,4 +1,4 @@
 ALL:
-	g++ -std=c++17 src/ham_send.cpp -o ham_send
+	g++ -std=c++17 src/ham_send.cpp -o bin/ham_send
 clean:
-	rm ham_send
+	rm bin/ham_send

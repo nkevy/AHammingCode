@@ -12,5 +12,6 @@ Manifest
 1. README.md
 2. src: contains ham_send source code
 3. bin: contains ham_send binary
+4. Makefile 
 
 code is written in c++17
