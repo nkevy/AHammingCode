@@ -7,7 +7,16 @@
 ////////////////////////////////////////////////////////////////
 #include "ham_send.h"
 int main(int argc,char* argz[]){
-	if(1==argc){
-		std::cout<<"[Usage] ham_send <message>\n[Usage] max length is 64 characters"<<std::endl;
+	if(1!=argc){
+		cout<<"[Usage] ham_send"<<endl;
+		cout<<"[Usage] Max length is 100 characters."<<endl;
+		cout<<"[Usage] To quit send an empty message."<<endl;
 	}
+	string host, port;
+	cout<<"Enter the host ip you wish to contact:"<<endl;
+	cin>>host;
+	cout<<"Enter the port you wish to use:"<<endl;
+	cin>>port;
+	ham_server ham(host,port);
+	ham.start();
 }

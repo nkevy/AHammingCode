@@ -9,13 +9,13 @@
 using namespace std;
 class hamming{
 	private:
-		string to_binary(char cc);
-		char to_char(string ss[8]);
-		char is_one(string ss);
-		char get_char(string ss);
+		static string to_binary(char cc);
+		static char to_char(string ss[8]);
+		static char is_one(string ss);
+		static char decode_character(string ss);
 	public:
-		string encode_char(char cc);
-		string encode_string(string ss);
-		string decode(string ss);
+		static string encode_char(char cc);
+		static string encode_string(string ss);
+		static string decode_message(string ss);
 };
 #endif

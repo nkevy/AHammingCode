@@ -42,7 +42,7 @@ string hamming::encode_char(char cc){
 	p3+
 		before[1]+
 		before[2]+
-		before[4]+
+		before[3]+
 		before[7];
 	p4+
 		before[4]+
@@ -72,47 +72,81 @@ string hamming::encode_string(string ss){
 	return after;
 }
 //error correction for hamming code
-char hamming::get_char(string ss){
+char hamming::decode_character(string ss){
 	char p1,p2,p3,p4;
 	string c1,c2,c3,c4;
+	bool b1,b2,b3,b4;
 	string before=ss;
+	string after[8];
 	p1 = ss[0];
 	c1 = 
-		ss[0]+
-		ss[1]+
-		ss[3]+
-		ss[4]+
-		ss[6];
-	if(p1==hamming::is_one(c1)){
-		//parity one is correct
-		int i=0;
-	}else{
-		//parity one is wrong 
-		int i=9;
-	}
+		before[2]+
+		before[4]+
+		before[6]+
+		before[8]+
+		before[11];
+	// bool here represents the check of a parity bit   
+	b1=(p1==hamming::is_one(c1));
 	p2=ss[1];
 	c2 = 
-		before[0]+
 		before[2]+
-		before[3]+
-		before[5]+
-		before[6];
-	p3=ss[3];
-	c3 = 
-		before[1]+
-		before[2]+
-		before[4]+
-		before[7];
-	p4=ss[7];
-	c4 = 
-		before[4]+
 		before[5]+
 		before[6]+
-		before[7];
-	return '0';
+		before[9]+
+		before[10];
+	b2=p1==hamming::is_one(c2);
+	p3=ss[3];
+	c3 = 
+		before[4]+
+		before[5]+
+		before[8]+
+		before[11];
+	b3=p3==hamming::is_one(c3);
+	p4=ss[7];
+	c4 = 
+		before[8]+
+		before[9]+
+		before[10]+
+		before[11];
+	b4=p4==hamming::is_one(c4);
+	//error correction step
+	// note: here we must make a decision about the accuracy of 
+	// the error correction. If there is only one error then 
+	// the decode_character function will operate well.
+	// If there are multiple errors the function may work
+	// but there is no grantee. With only a single message
+	// as a sample we cannot make generalizations. Errors 
+	// may occur but, that is ok. Other protocols types
+	// such as congestion control and handshakes could be
+	// used to resend potentially problematic data.   
+	if(!(b1&&b2)&b3){
+		after[0] = (before[2]=='1')?'0':'1';
+	}
+	if(!(b1&&b3)&b2){
+		after[1] = (before[4]=='1')?'0':'1';
+	}
+	if(!(b2&&b3)&b1){
+		after[2] = (before[5]=='1')?'0':'1';
+	}
+	if(!(b1&&b2&&b3)){
+		after[3] = (before[6]=='1')?'0':'1';
+	}
+	if(!(b1&&b4)&b2){
+		after[4] = (before[8]=='1')?'0':'1';
+	}
+	if(!(b2&&b4)&b1){
+		after[5] = (before[9]=='1')?'0':'1';
+	}
+	if(!(b1&&b2&&b4)){
+		after[6] = (before[10]=='1')?'0':'1';
+	}
+	if(!(b3&&b4)){
+		after[7] = (before[11]=='1')?'0':'1';
+	}
+	return hamming::to_char(after);
 }
 //decode a binary string assuming hamming code is present
-string hamming::decode(string ss){
+string hamming::decode_message(string ss){
 	//split into 12 bit chars
 	vector<string> ham_char_list;
 	int j=0;
@@ -122,12 +156,13 @@ string hamming::decode(string ss){
 			j=i+1;
 		}
 	}
-	//error detection and concatination
+	//error correction and concatenation
 	char cc;
 	string msg;
 	for(int i=0;i<ham_char_list.size();i++){
-		cc = hamming::get_char(ham_char_list[i]);
+		cc = hamming::decode_character(ham_char_list[i]);
 		msg = msg + cc;
 	}
-	return ss;
+	// return corrected message
+	return msg;
 }
